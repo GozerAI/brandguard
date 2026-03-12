@@ -8,6 +8,9 @@ from typing import Optional
 import httpx
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 from pydantic import BaseModel
 
 from brandguard.service import BrandService
@@ -30,6 +33,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="BrandGuard", version="0.1.0", lifespan=lifespan)
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -297,8 +304,21 @@ async def get_executive_report(
 
 
 @app.post("/v1/autonomous/analyze")
-async def run_autonomous_analysis(tenant: dict = Depends(require_entitlement("brandguard:full"))):
+@limiter.limit("30/minute")
+async def run_autonomous_analysis(request: Request, tenant: dict = Depends(require_entitlement("brandguard:full"))):
     return _svc().run_autonomous_analysis()
+
+
+# -- Security headers middleware ------------------------------------------------
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
 if __name__ == "__main__":

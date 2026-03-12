@@ -5,8 +5,8 @@ Provides brand guidelines, asset management, and consistency enforcement
 for teams. Enables brand-aligned content creation and
 marketing material validation.
 
-Primary Owners: CMO, CCO
-Secondary Owners: CPO
+Primary Owners: CMO (Echo), CCO (Artisan)
+Secondary Owners: CPO (Visionary)
 """
 
 from brandguard.core import (

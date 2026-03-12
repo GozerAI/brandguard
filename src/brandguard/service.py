@@ -1,7 +1,7 @@
 """
 Brand Service - High-level service interface for executives.
 
-Provides a unified API for teams to interact with
+Provides a unified API for interacting with
 brand management and consistency enforcement.
 """
 
@@ -25,17 +25,25 @@ from brandguard.core import (
     FontFamily,
     ContentType,
 )
-from brandguard.guidelines import (
-    ComplianceReporter,
-    GuidelineManager,
-    GuidelineValidator,
-    ConsistencyChecker,
-    ValidationResult,
-)
-from brandguard.assets import (
-    AssetManager,
-    AssetLibrary,
-)
+try:
+    from brandguard.guidelines import (
+        ComplianceReporter,
+        GuidelineManager,
+        GuidelineValidator,
+        ConsistencyChecker,
+        ValidationResult,
+    )
+    _HAS_GUIDELINES = True
+except ImportError:
+    _HAS_GUIDELINES = False
+try:
+    from brandguard.assets import (
+        AssetManager,
+        AssetLibrary,
+    )
+    _HAS_ASSETS = True
+except ImportError:
+    _HAS_ASSETS = False
 from brandguard.licensing import license_gate
 
 logger = logging.getLogger(__name__)
@@ -56,7 +64,7 @@ except ImportError:
 
 class BrandService:
     """
-    High-level brand management service.
+    High-level brand management service for users.
 
     This service provides a unified interface for:
     - CMO (Echo): Brand strategy, voice guidelines, marketing materials
@@ -90,8 +98,8 @@ class BrandService:
         self._storage_path = Path(storage_path) if storage_path else None
         self._identity_file = self._storage_path / "identity.json" if self._storage_path else None
         self._identity: Optional[BrandIdentity] = None
-        self._guideline_manager = GuidelineManager()
-        self._asset_library = AssetLibrary(self._storage_path)
+        self._guideline_manager = GuidelineManager() if _HAS_GUIDELINES else None
+        self._asset_library = AssetLibrary(self._storage_path) if _HAS_ASSETS else None
 
         self._initialized = False
 
