@@ -1,7 +1,7 @@
 """
 Brand Service - High-level service interface for executives.
 
-Provides a unified API for C-Suite executives to interact with
+Provides a unified API for teams to interact with
 brand management and consistency enforcement.
 """
 
@@ -56,7 +56,7 @@ except ImportError:
 
 class BrandService:
     """
-    High-level brand management service for C-Suite executives.
+    High-level brand management service.
 
     This service provides a unified interface for:
     - CMO (Echo): Brand strategy, voice guidelines, marketing materials

@@ -2,11 +2,11 @@
 Brandguard - Brand Suite.
 
 Provides brand guidelines, asset management, and consistency enforcement
-for C-Suite executives. Enables brand-aligned content creation and
+for teams. Enables brand-aligned content creation and
 marketing material validation.
 
-Primary Owners: CMO (Echo), CCO (Artisan)
-Secondary Owners: CPO (Visionary)
+Primary Owners: CMO, CCO
+Secondary Owners: CPO
 """
 
 from brandguard.core import (
